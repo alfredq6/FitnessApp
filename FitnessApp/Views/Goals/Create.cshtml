@@ -1,0 +1,41 @@
+﻿@{
+    ViewData["Title"] = "Добавить цель";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <h2 class="mb-4">Добавить цель</h2>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <p>@error.ErrorMessage</p>
+            }
+        </div>
+    }
+
+    <form method="post" action="/Goals/Create" class="card p-4" style="max-width: 400px;">
+        @Html.AntiForgeryToken()
+        <div class="mb-3">
+            <label class="form-label">Тип цели:</label>
+            <select name="type" class="form-select" required>
+                <option value="Count">Количество тренировок</option>
+                <option value="Duration">Общее время (минуты)</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Целевое значение:</label>
+            <input type="number" name="targetValue" class="form-control" min="1" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Период:</label>
+            <select name="period" class="form-select" required>
+                <option value="Week">Неделя</option>
+                <option value="Month">Месяц</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Создать цель</button>
+    </form>
+</div>

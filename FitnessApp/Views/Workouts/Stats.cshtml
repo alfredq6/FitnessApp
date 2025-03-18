@@ -1,0 +1,102 @@
+﻿@using FitnessApp.Data
+@using FitnessApp.ViewModels
+@using Microsoft.EntityFrameworkCore;
+@inject ApplicationDbContext _context;
+
+@model WorkoutStatsViewModel
+
+@{
+    ViewData["Title"] = "Статистика тренировок";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <h2 class="mb-4">Статистика тренировок</h2>
+
+    <div class="btn-group mb-4" role="group">
+        <a href="/Workouts/Stats?period=all" class="btn btn-primary @(Model.FilterPeriod == "за всё время" ? "active" : "")">Всё время</a>
+        <a href="/Workouts/Stats?period=month" class="btn btn-primary @(Model.FilterPeriod == "за месяц" ? "active" : "")">Месяц</a>
+        <a href="/Workouts/Stats?period=week" class="btn btn-primary @(Model.FilterPeriod == "за неделю" ? "active" : "")">Неделя</a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Общая статистика (@Model.FilterPeriod)</h5>
+            <p class="card-text"><strong>Всего тренировок:</strong> @Model.TotalWorkouts</p>
+            <p class="card-text"><strong>Общее время:</strong> @Model.TotalDuration минут</p>
+            <p class="card-text"><strong>Средняя продолжительность:</strong> @Model.AverageDuration.ToString("F1") минут</p>
+            <p class="card-text"><strong>Самая частая тренировка:</strong> @Model.MostFrequentWorkout</p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Тренировки по датам</h5>
+            <canvas id="workoutsChart" height="200"></canvas>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Время по дням недели (@Model.FilterPeriod)</h5>
+            <ul class="list-group list-group-flush">
+                @foreach (var day in Model.DurationByDayOfWeek.OrderBy(d => Array.IndexOf(new[] { "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье" }, d.Key)))
+                {
+                    <li class="list-group-item">@day.Key: @day.Value минут</li>
+                }
+            </ul>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Активные цели (@Model.FilterPeriod)</h5>
+            @if (Model.Goals.Any())
+            {
+                <ul class="list-group list-group-flush">
+                    @foreach (var goal in Model.Goals)
+                    {
+                        var unit = goal.Type == "Count" ? "шт." : "мин";
+                        var periodText = goal.Period == "Week" ? "за неделю" : "за месяц";
+                        <li class="list-group-item">
+                            @(goal.Type == "Count" ? "Тренировок" : "Время") @goal.TargetValue @unit @periodText:
+                            @goal.Progress / @goal.TargetValue
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>Нет активных целей.</p>
+            }
+        </div>
+    </div>
+
+    <a href="/Workouts/Index" class="btn btn-primary">Вернуться к тренировкам</a>
+</div>
+
+@section Scripts {
+    <script>
+        const ctx = document.getElementById('workoutsChart').getContext('2d');
+        const workoutsData = {
+            labels: [@Html.Raw(string.Join(",", Model.WorkoutsByDate.Keys.Select(d => $"'{d:dd.MM.yyyy}'")))],
+            datasets: [{
+                label: 'Продолжительность (мин)',
+                data: [@Html.Raw(string.Join(",", Model.WorkoutsByDate.Values))],
+                backgroundColor: 'rgba(0, 123, 255, 0.5)',
+                borderColor: 'rgba(0, 123, 255, 1)',
+                borderWidth: 1
+            }]
+        };
+        new Chart(ctx, {
+            type: 'bar',
+            data: workoutsData,
+            options: {
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: 'Минуты' } },
+                    x: { title: { display: true, text: 'Дата' } }
+                }
+            }
+        });
+    </script>
+}

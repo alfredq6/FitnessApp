@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["Title"] = "Главная";
+}
+
+<h2>Добро пожаловать!</h2>
+@if (User?.Identity?.IsAuthenticated == true)
+{
+    <p>Вы вошли как @User.Identity.Name</p>
+    <a href="/Auth/Logout">Выйти</a>
+}
+else
+{
+    <p>Пожалуйста, <a href="/Auth/Login">войдите</a>.</p>
+}

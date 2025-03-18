@@ -1,0 +1,49 @@
+﻿@using FitnessApp.ViewModels
+@model WorkoutGoalViewModel
+
+@{
+    ViewData["Title"] = "Редактировать цель";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <h2 class="mb-4">Редактировать цель</h2>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <p>@error.ErrorMessage</p>
+            }
+        </div>
+    }
+
+    <form method="post" action="/Goals/Edit/@Model.Id" class="card p-4" style="max-width: 400px;">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <div class="mb-3">
+            <label asp-for="Type" class="form-label">Тип цели:</label>
+            <select asp-for="Type" class="form-select" required>
+                <option value="Count" selected="@(Model.Type == "Count" ? "selected" : null)">Количество тренировок</option>
+                <option value="Duration" selected="@(Model.Type == "Duration" ? "selected" : null)">Общее время (минуты)</option>
+            </select>
+            <span asp-validation-for="Type" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="TargetValue" class="form-label">Целевое значение:</label>
+            <input asp-for="TargetValue" class="form-control" min="1" required />
+            <span asp-validation-for="TargetValue" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Period" class="form-label">Период:</label>
+            <select asp-for="Period" class="form-select" required>
+                <option value="Week" selected="@(Model.Period == "Week" ? "selected" : null)">Неделя</option>
+                <option value="Month" selected="@(Model.Period == "Month" ? "selected" : null)">Месяц</option>
+            </select>
+            <span asp-validation-for="Period" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <a href="/Goals/Index" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>

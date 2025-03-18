@@ -1,0 +1,43 @@
+﻿@using FitnessApp.ViewModels
+@model WorkoutViewModel
+
+@{
+    ViewData["Title"] = "Редактировать тренировку";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <h2 class="mb-4">Редактировать тренировку</h2>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <p>@error.ErrorMessage</p>
+            }
+        </div>
+    }
+
+    <form method="post" action="/Workouts/Edit/@Model.Id" class="card p-4" style="max-width: 400px;">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" /> <!-- Если нужно передать Id, но он не редактируется -->
+        <div class="mb-3">
+            <label asp-for="Date" class="form-label">Дата:</label>
+            <input asp-for="Date" class="form-control" required />
+            <span asp-validation-for="Date" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">Название:</label>
+            <input asp-for="Name" class="form-control" required />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Duration" class="form-label">Продолжительность (мин):</label>
+            <input asp-for="Duration" class="form-control" min="1" required />
+            <span asp-validation-for="Duration" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <a href="/Workouts/Index" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>

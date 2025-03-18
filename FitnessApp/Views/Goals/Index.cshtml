@@ -1,0 +1,59 @@
+﻿@model List<WorkoutGoal>
+
+@{
+    ViewData["Title"] = "Мои цели";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <h2 class="mb-4">Мои цели</h2>
+
+    <a href="/Goals/Create" class="btn btn-primary mb-4">Добавить цель</a>
+
+    @if (Model.Any())
+    {
+        <div class="row">
+            @foreach (var goal in Model)
+            {
+                var progress = (int)ViewData[$"Progress_{goal.Id}"];
+                var progressPercentage = Math.Min((double)progress / goal.TargetValue * 100, 100);
+                var unit = goal.Type == "Count" ? "тренировок" : "минут";
+                var periodText = goal.Period == "Week" ? "за неделю" : "за месяц";
+
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                @(goal.Type == "Count" ? "Количество тренировок" : "Общее время") @periodText
+                            </h5>
+                            <p class="card-text">
+                                <strong>Цель:</strong> @goal.TargetValue @unit<br />
+                                <strong>Прогресс:</strong> @progress @unit<br />
+                                <strong>Дата начала:</strong> @goal.StartDate.ToString("dd.MM.yyyy")
+                            </p>
+                            <div class="progress mb-3">
+                                <div class="progress-bar" role="progressbar" style="width: @progressPercentage%;"
+                                     aria-valuenow="@progressPercentage" aria-valuemin="0" aria-valuemax="100">
+                                    @progressPercentage.ToString("F0")%
+                                </div>
+                            </div>
+                            <a href="/Goals/Edit/@goal.Id" class="btn btn-warning btn-sm">Редактировать</a>
+                            <form method="post" action="/Goals/Complete" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@goal.Id" />
+                                <button type="submit" class="btn btn-success btn-sm"
+                                @(progress >= goal.TargetValue ? "" : "disabled")>
+                                    Отметить выполненной
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p>У вас пока нет активных целей.</p>
+    }
+</div>
