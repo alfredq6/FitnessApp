@@ -1,42 +1,37 @@
-﻿@model List<Workout>
+﻿@using FitnessApp.ViewModels
+@model List<WorkoutViewModel>
 
 @{
-    ViewData["Title"] = "Мои тренировки";
+    ViewData["Title"] = "Тренировки";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container my-5">
-    <h2 class="mb-4 fw-bold"><i class="fas fa-running me-2"></i>Мои тренировки</h2>
+    <h2 class="mb-4 fw-bold"><i class="fas fa-running me-2"></i>Ваши тренировки</h2>
 
-    <p>
-        <a href="/Workouts/Create" class="btn btn-primary"><i class="fas fa-plus me-2"></i>Добавить тренировку</a>
-    </p>
+    <a href="/Workouts/Create" class="btn btn-primary mb-4" data-theme="dark"><i class="fas fa-plus me-2"></i>Добавить тренировку</a>
 
     @if (Model.Any())
     {
-        <table class="table table-bordered" data-theme="dark">
-            <thead class="table-primary" data-theme="dark">
-                <tr>
-                    <th>Дата</th>
-                    <th>Название</th>
-                    <th>Продолжительность (мин)</th>
-                    <th>Действия</th>
+        <table class="table-custom" data-theme="dark">
+            <thead class="table-header" data-theme="dark">
+                <tr data-theme="dark">
+                    <th data-theme="dark">Дата</th>
+                    <th data-theme="dark">Тип</th>
+                    <th data-theme="dark">Продолжительность (мин)</th>
+                    <th data-theme="dark">Действия</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var workout in Model)
                 {
-                    <tr>
-                        <td>@workout.Date.ToString("dd.MM.yyyy")</td>
-                        <td>@workout.Name</td>
-                        <td>@workout.Duration</td>
-                        <td>
-                            <a href="/Workouts/Edit/@workout.Id" class="btn btn-warning btn-sm"><i class="fas fa-edit me-1"></i>Редактировать</a>
-                            <form method="post" action="/Workouts/Delete" style="display:inline;">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="id" value="@workout.Id" />
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Удалить тренировку?');"><i class="fas fa-trash me-1"></i>Удалить</button>
-                            </form>
+                    <tr data-theme="dark">
+                        <td data-theme="dark">@workout.Date.ToString("dd.MM.yyyy")</td>
+                        <td data-theme="dark">@workout.Name</td>
+                        <td data-theme="dark">@workout.Duration</td>
+                        <td data-theme="dark">
+                            <a href="/Workouts/Edit/@workout.Id" class="btn btn-sm btn-outline-custom" data-theme="dark"><i class="fas fa-edit me-1"></i>Редактировать</a>
+                            <a href="/Workouts/Delete/@workout.Id" class="btn btn-sm btn-danger" data-theme="dark"><i class="fas fa-trash me-1"></i>Удалить</a>
                         </td>
                     </tr>
                 }
@@ -45,6 +40,11 @@
     }
     else
     {
-        <p class="text-light" data-theme="dark">У вас пока нет тренировок.</p>
+        <div class="card" data-theme="dark">
+            <div class="card-body text-center">
+                <p class="card-text">У вас пока нет тренировок. Начните прямо сейчас!</p>
+                <a href="/Workouts/Create" class="btn btn-primary" data-theme="dark"><i class="fas fa-plus me-2"></i>Добавить тренировку</a>
+            </div>
+        </div>
     }
 </div>

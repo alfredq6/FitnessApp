@@ -28,7 +28,12 @@ namespace FitnessApp.Controllers
             var workouts = await _context.Workouts
                 .Where(w => w.UserId == userId)
                 .ToListAsync();
-            return View(workouts);
+            return View(workouts.Select(workout => new WorkoutViewModel
+            {
+                Date = workout.Date,
+                Name = workout.Name,
+                Duration = workout.Duration
+            }).ToList());
         }
 
         [HttpGet]

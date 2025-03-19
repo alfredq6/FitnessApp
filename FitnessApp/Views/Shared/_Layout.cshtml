@@ -19,6 +19,10 @@
             --card-dark: #2d3348;
             --primary-light: #38bdf8;
             --primary-light-dark: #2563eb;
+            --table-header-dark: #3b435f;
+            --table-header-light: #e2e8f0;
+            --table-row-dark: #252b41;
+            --table-row-light: #f1f5f9;
         }
 
         body {
@@ -198,34 +202,53 @@
             transition: transform 0.2s;
         }
 
-        .table[data-theme="dark"] {
+        .table-custom {
+            border-collapse: separate;
+            border-spacing: 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+            .table-custom th, .table-custom td {
+                padding: 12px 16px; /* Увеличенный отступ для читаемости */
+                vertical-align: middle;
+            }
+
+        .table-header[data-theme="dark"] {
+            background: var(--table-header-dark);
             color: var(--text-light);
-            background: var(--card-dark);
+            font-weight: 600;
         }
 
-        .table[data-theme="light"] {
+        .table-header[data-theme="light"] {
+            background: var(--table-header-light);
             color: var(--text-dark);
-            background: var(--card-light);
+            font-weight: 600;
         }
 
-        .table th[data-theme="dark"], .table td[data-theme="dark"] {
-            border-color: #3a3a50;
+        .table-custom tbody tr[data-theme="dark"] {
             background: var(--card-dark);
+            transition: background 0.2s ease;
         }
 
-        .table th[data-theme="light"], .table td[data-theme="light"] {
-            border-color: #e5e7eb;
+        .table-custom tbody tr[data-theme="light"] {
             background: var(--card-light);
+            transition: background 0.2s ease;
         }
 
-        .table-primary[data-theme="dark"] {
-            background: #3a3a50;
-            color: var(--text-light);
+        .table-custom tbody tr.table-striped:nth-child(odd)[data-theme="dark"] {
+            background: var(--table-row-dark);
         }
 
-        .table-primary[data-theme="light"] {
-            background: #e5e7eb;
-            color: var(--text-dark);
+        .table-custom tbody tr.table-striped:nth-child(odd)[data-theme="light"] {
+            background: var(--table-row-light);
+        }
+
+        .table-custom tbody tr:hover[data-theme="dark"] {
+            background: #343a56; /* Hover-эффект для тёмной темы */
+        }
+
+        .table-custom tbody tr:hover[data-theme="light"] {
+            background: #edf2f7; /* Hover-эффект для светлой темы */
         }
 
         .form-control[data-theme="dark"] {
@@ -385,21 +408,22 @@
         const footer = document.querySelector('footer');
         const elements = document.querySelectorAll('[data-theme]');
 
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = body.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        function updateTheme(newTheme) {
             body.setAttribute('data-theme', newTheme);
             navbar.setAttribute('data-theme', newTheme);
             footer.setAttribute('data-theme', newTheme);
             elements.forEach(el => el.setAttribute('data-theme', newTheme));
             localStorage.setItem('theme', newTheme);
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            updateTheme(newTheme);
         });
 
         const savedTheme = localStorage.getItem('theme') || 'dark';
-        body.setAttribute('data-theme', savedTheme);
-        navbar.setAttribute('data-theme', savedTheme);
-        footer.setAttribute('data-theme', savedTheme);
-        elements.forEach(el => el.setAttribute('data-theme', savedTheme));
+        updateTheme(savedTheme);
 
         let isExpanded = false;
         let lastScrollY = window.scrollY;
