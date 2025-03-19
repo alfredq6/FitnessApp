@@ -6,12 +6,12 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container">
-    <h2 class="mb-4">Редактировать цель</h2>
+<div class="container my-5">
+    <h2 class="mb-4 fw-bold"><i class="fas fa-edit me-2"></i>Редактировать цель</h2>
 
     @if (!ViewData.ModelState.IsValid)
     {
-        <div class="alert alert-danger">
+        <div class="alert alert-danger animate__animated animate__fadeIn" data-theme="dark">
             @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
             {
                 <p>@error.ErrorMessage</p>
@@ -19,31 +19,39 @@
         </div>
     }
 
-    <form method="post" action="/Goals/Edit/@Model.Id" class="card p-4" style="max-width: 400px;">
-        @Html.AntiForgeryToken()
-        <input type="hidden" asp-for="Id" />
-        <div class="mb-3">
-            <label asp-for="Type" class="form-label">Тип цели:</label>
-            <select asp-for="Type" class="form-select" required>
-                <option value="Count" selected="@(Model.Type == "Count" ? "selected" : null)">Количество тренировок</option>
-                <option value="Duration" selected="@(Model.Type == "Duration" ? "selected" : null)">Общее время (минуты)</option>
-            </select>
-            <span asp-validation-for="Type" class="text-danger"></span>
-        </div>
-        <div class="mb-3">
-            <label asp-for="TargetValue" class="form-label">Целевое значение:</label>
-            <input asp-for="TargetValue" class="form-control" min="1" required />
-            <span asp-validation-for="TargetValue" class="text-danger"></span>
-        </div>
-        <div class="mb-3">
-            <label asp-for="Period" class="form-label">Период:</label>
-            <select asp-for="Period" class="form-select" required>
-                <option value="Week" selected="@(Model.Period == "Week" ? "selected" : null)">Неделя</option>
-                <option value="Month" selected="@(Model.Period == "Month" ? "selected" : null)">Месяц</option>
-            </select>
-            <span asp-validation-for="Period" class="text-danger"></span>
-        </div>
-        <button type="submit" class="btn btn-primary">Сохранить</button>
-        <a href="/Goals/Index" class="btn btn-secondary">Отмена</a>
-    </form>
+    <div class="card p-4" data-theme="dark">
+        <form method="post" action="/Goals/Edit/@Model.Id">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+            <div class="mb-3">
+                <label asp-for="Type" class="form-label"><i class="fas fa-list-ul me-2"></i>Тип цели</label>
+                <select asp-for="Type" class="form-select" data-theme="dark" required>
+                    <option value="Count" selected="@(Model.Type == "Count" ? "selected" : null)">Количество тренировок</option>
+                    <option value="Duration" selected="@(Model.Type == "Duration" ? "selected" : null)">Общее время (минуты)</option>
+                </select>
+                <span asp-validation-for="Type" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="TargetValue" class="form-label"><i class="fas fa-bullseye me-2"></i>Целевое значение</label>
+                <input asp-for="TargetValue" class="form-control" data-theme="dark" min="1" required />
+                <span asp-validation-for="TargetValue" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Period" class="form-label"><i class="fas fa-calendar-week me-2"></i>Период</label>
+                <select asp-for="Period" class="form-select" data-theme="dark" required>
+                    <option value="Week" selected="@(Model.Period == "Week" ? "selected" : null)">Неделя</option>
+                    <option value="Month" selected="@(Model.Period == "Month" ? "selected" : null)">Месяц</option>
+                </select>
+                <span asp-validation-for="Period" class="text-danger"></span>
+            </div>
+            <div class="d-flex gap-3">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Сохранить</button>
+                <a href="/Goals/Index" class="btn btn-outline-light"><i class="fas fa-arrow-left me-2"></i>Отмена</a>
+            </div>
+        </form>
+    </div>
 </div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+}

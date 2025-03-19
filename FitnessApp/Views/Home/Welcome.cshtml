@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "Добро пожаловать";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container text-center my-5">
+    <h1 class="display-3 fw-bold animate__animated animate__fadeIn">Онлайн журнал тренировок</h1>
+    <p class="lead text-light mt-3 animate__animated animate__fadeIn" style="animation-delay: 0.2s;">
+        Ваш идеальный помощник для отслеживания прогресса и достижения целей!
+    </p>
+    <div class="mt-5">
+        <a href="/Auth/Login" class="btn btn-primary btn-lg mx-2 animate__animated animate__zoomIn" style="animation-delay: 0.4s;">Войти</a>
+        <a href="/Auth/Register" class="btn btn-outline-light btn-lg mx-2 animate__animated animate__zoomIn" style="animation-delay: 0.6s;">Зарегистрироваться</a>
+    </div>
+    <div class="row mt-5 text-light">
+        <div class="col-md-4 mb-4">
+            <div class="card p-3 animate__animated animate__fadeInUp" style="animation-delay: 0.8s;">
+                <h5 class="fw-bold">Тренировки</h5>
+                <p>Записывайте и редактируйте свои тренировки в удобном интерфейсе.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card p-3 animate__animated animate__fadeInUp" style="animation-delay: 1s;">
+                <h5 class="fw-bold">Цели</h5>
+                <p>Ставьте амбициозные цели и следите за их выполнением.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card p-3 animate__animated animate__fadeInUp" style="animation-delay: 1.2s;">
+                <h5 class="fw-bold text-white">Аналитика</h5>
+                <p>Анализируйте свои результаты с помощью графиков и статистики.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+}

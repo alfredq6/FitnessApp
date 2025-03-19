@@ -5,17 +5,17 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container">
-    <h2 class="mb-4">Мои тренировки</h2>
+<div class="container my-5">
+    <h2 class="mb-4 fw-bold"><i class="fas fa-running me-2"></i>Мои тренировки</h2>
 
     <p>
-        <a href="/Workouts/Create" class="btn btn-primary">Добавить тренировку</a>
+        <a href="/Workouts/Create" class="btn btn-primary"><i class="fas fa-plus me-2"></i>Добавить тренировку</a>
     </p>
 
     @if (Model.Any())
     {
-        <table class="table table-bordered">
-            <thead class="table-primary">
+        <table class="table table-bordered" data-theme="dark">
+            <thead class="table-primary" data-theme="dark">
                 <tr>
                     <th>Дата</th>
                     <th>Название</th>
@@ -31,11 +31,11 @@
                         <td>@workout.Name</td>
                         <td>@workout.Duration</td>
                         <td>
-                            <a href="/Workouts/Edit/@workout.Id" class="btn btn-warning btn-sm">Редактировать</a>
+                            <a href="/Workouts/Edit/@workout.Id" class="btn btn-warning btn-sm"><i class="fas fa-edit me-1"></i>Редактировать</a>
                             <form method="post" action="/Workouts/Delete" style="display:inline;">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="id" value="@workout.Id" />
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Удалить тренировку?');">Удалить</button>
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Удалить тренировку?');"><i class="fas fa-trash me-1"></i>Удалить</button>
                             </form>
                         </td>
                     </tr>
@@ -45,6 +45,6 @@
     }
     else
     {
-        <p>У вас пока нет тренировок.</p>
+        <p class="text-light" data-theme="dark">У вас пока нет тренировок.</p>
     }
 </div>

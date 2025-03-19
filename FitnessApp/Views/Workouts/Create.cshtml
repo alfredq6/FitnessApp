@@ -6,74 +6,45 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Добавить тренировку</h2>
+<div class="container my-5">
+    <h2 class="mb-4 fw-bold"><i class="fas fa-plus-circle me-2"></i>Добавить тренировку</h2>
 
-@if (!ViewData.ModelState.IsValid)
-{
-    <div class="error">
-        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-        {
-            <p>@error.ErrorMessage</p>
-        }
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger animate__animated animate__fadeIn" data-theme="dark">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <p>@error.ErrorMessage</p>
+            }
+        </div>
+    }
+
+    <div class="card p-4" data-theme="dark">
+        <form method="post" action="/Workouts/Create">
+            @Html.AntiForgeryToken()
+            <div class="mb-3">
+                <label asp-for="Date" class="form-label"><i class="fas fa-calendar-alt me-2"></i>Дата</label>
+                <input asp-for="Date" class="form-control" data-theme="dark" required />
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label"><i class="fas fa-tag me-2"></i>Название</label>
+                <input asp-for="Name" class="form-control" data-theme="dark" required />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Duration" class="form-label"><i class="fas fa-clock me-2"></i>Продолжительность (мин)</label>
+                <input asp-for="Duration" class="form-control" data-theme="dark" min="1" required />
+                <span asp-validation-for="Duration" class="text-danger"></span>
+            </div>
+            <div class="d-flex gap-3">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Сохранить</button>
+                <a href="/Workouts/Index" class="btn btn-outline-light"><i class="fas fa-arrow-left me-2"></i>Отмена</a>
+            </div>
+        </form>
     </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 }
-
-<form method="post" action="/Workouts/Create">
-    @Html.AntiForgeryToken() <!-- Добавляем токен -->
-    <div class="form-group">
-        <label asp-for="Date">Дата:</label>
-        <input asp-for="Date" required />
-        <span asp-validation-for="Date" class="error"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Name">Название:</label>
-        <input asp-for="Name" required />
-        <span asp-validation-for="Name" class="error"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Duration">Продолжительность (мин):</label>
-        <input asp-for="Duration" min="1" required />
-        <span asp-validation-for="Duration" class="error"></span>
-    </div>
-    <div class="form-group">
-        <button type="submit">Добавить</button>
-    </div>
-</form>
-
-<style>
-    .form-group {
-        margin-bottom: 15px;
-    }
-
-    label {
-        display: block;
-        margin-bottom: 5px;
-        color: #555;
-    }
-
-    input[type="date"], input[type="text"], input[type="number"] {
-        width: 100%;
-        max-width: 300px;
-        padding: 8px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        box-sizing: border-box;
-    }
-
-    button {
-        padding: 10px 20px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-    .error {
-        color: red;
-    }
-</style>

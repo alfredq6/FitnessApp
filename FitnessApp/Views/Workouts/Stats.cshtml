@@ -10,18 +10,18 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container">
-    <h2 class="mb-4">Статистика тренировок</h2>
+<div class="container my-5">
+    <h2 class="mb-4 fw-bold"><i class="fas fa-chart-bar me-2"></i>Статистика тренировок</h2>
 
-    <div class="btn-group mb-4" role="group">
-        <a href="/Workouts/Stats?period=all" class="btn btn-primary @(Model.FilterPeriod == "за всё время" ? "active" : "")">Всё время</a>
-        <a href="/Workouts/Stats?period=month" class="btn btn-primary @(Model.FilterPeriod == "за месяц" ? "active" : "")">Месяц</a>
-        <a href="/Workouts/Stats?period=week" class="btn btn-primary @(Model.FilterPeriod == "за неделю" ? "active" : "")">Неделя</a>
+    <div class="btn-group mb-4" role="group" data-theme="dark">
+        <a href="/Workouts/Stats?period=all" class="btn btn-primary @(Model.FilterPeriod == "за всё время" ? "active" : "")"><i class="fas fa-infinity me-2"></i>Всё время</a>
+        <a href="/Workouts/Stats?period=month" class="btn btn-primary @(Model.FilterPeriod == "за месяц" ? "active" : "")"><i class="fas fa-calendar-month me-2"></i>Месяц</a>
+        <a href="/Workouts/Stats?period=week" class="btn btn-primary @(Model.FilterPeriod == "за неделю" ? "active" : "")"><i class="fas fa-calendar-week me-2"></i>Неделя</a>
     </div>
 
-    <div class="card mb-4">
+    <div class="card mb-4" data-theme="dark">
         <div class="card-body">
-            <h5 class="card-title">Общая статистика (@Model.FilterPeriod)</h5>
+            <h5 class="card-title fw-bold"><i class="fas fa-info-circle me-2"></i>Общая статистика (@Model.FilterPeriod)</h5>
             <p class="card-text"><strong>Всего тренировок:</strong> @Model.TotalWorkouts</p>
             <p class="card-text"><strong>Общее время:</strong> @Model.TotalDuration минут</p>
             <p class="card-text"><strong>Средняя продолжительность:</strong> @Model.AverageDuration.ToString("F1") минут</p>
@@ -29,36 +29,37 @@
         </div>
     </div>
 
-    <div class="card mb-4">
+    <div class="card mb-4" data-theme="dark">
         <div class="card-body">
-            <h5 class="card-title">Тренировки по датам</h5>
+            <h5 class="card-title fw-bold"><i class="fas fa-chart-area me-2"></i>Тренировки по датам</h5>
             <canvas id="workoutsChart" height="200"></canvas>
         </div>
     </div>
 
-    <div class="card mb-4">
+    <div class="card mb-4" data-theme="dark">
         <div class="card-body">
-            <h5 class="card-title">Время по дням недели (@Model.FilterPeriod)</h5>
-            <ul class="list-group list-group-flush">
+            <h5 class="card-title fw-bold"><i class="fas fa-calendar-day me-2"></i>Время по дням недели (@Model.FilterPeriod)</h5>
+            <ul class="list-group list-group-flush" data-theme="dark">
                 @foreach (var day in Model.DurationByDayOfWeek.OrderBy(d => Array.IndexOf(new[] { "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье" }, d.Key)))
                 {
-                    <li class="list-group-item">@day.Key: @day.Value минут</li>
+                    <li class="list-group-item" data-theme="dark">@day.Key: @day.Value минут</li>
                 }
             </ul>
         </div>
     </div>
 
-    <div class="card mb-4">
+    <div class="card mb-4" data-theme="dark">
         <div class="card-body">
-            <h5 class="card-title">Активные цели (@Model.FilterPeriod)</h5>
+            <h5 class="card-title fw-bold"><i class="fas fa-flag-checkered me-2"></i>Активные цели (@Model.FilterPeriod)</h5>
             @if (Model.Goals.Any())
             {
-                <ul class="list-group list-group-flush">
+                <ul class="list-group list-group-flush" data-theme="dark">
                     @foreach (var goal in Model.Goals)
                     {
                         var unit = goal.Type == "Count" ? "шт." : "мин";
                         var periodText = goal.Period == "Week" ? "за неделю" : "за месяц";
-                        <li class="list-group-item">
+                        <li class="list-group-item" data-theme="dark">
+                            <i class="fas @(goal.Type == "Count" ? "fa-list-ol" : "fa-clock") me-2"></i>
                             @(goal.Type == "Count" ? "Тренировок" : "Время") @goal.TargetValue @unit @periodText:
                             @goal.Progress / @goal.TargetValue
                         </li>
@@ -67,36 +68,80 @@
             }
             else
             {
-                <p>Нет активных целей.</p>
+                <p class="card-text text-light" data-theme="dark">Нет активных целей.</p>
             }
         </div>
     </div>
 
-    <a href="/Workouts/Index" class="btn btn-primary">Вернуться к тренировкам</a>
+    <a href="/Workouts/Index" class="btn btn-outline-custom" data-theme="dark"><i class="fas fa-arrow-left me-2"></i>Вернуться к тренировкам</a>
 </div>
 
 @section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
     <script>
-        const ctx = document.getElementById('workoutsChart').getContext('2d');
-        const workoutsData = {
-            labels: [@Html.Raw(string.Join(",", Model.WorkoutsByDate.Keys.Select(d => $"'{d:dd.MM.yyyy}'")))],
-            datasets: [{
-                label: 'Продолжительность (мин)',
-                data: [@Html.Raw(string.Join(",", Model.WorkoutsByDate.Values))],
-                backgroundColor: 'rgba(0, 123, 255, 0.5)',
-                borderColor: 'rgba(0, 123, 255, 1)',
-                borderWidth: 1
-            }]
-        };
-        new Chart(ctx, {
-            type: 'bar',
-            data: workoutsData,
-            options: {
-                scales: {
-                    y: { beginAtZero: true, title: { display: true, text: 'Минуты' } },
-                    x: { title: { display: true, text: 'Дата' } }
+        let workoutsChart; // Объявляем переменную глобально
+
+        function initializeChart() {
+            const ctx = document.getElementById('workoutsChart').getContext('2d');
+            const theme = document.body.getAttribute('data-theme');
+            const textColor = theme === 'dark' ? '#e0e0e0' : '#333';
+
+            workoutsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [@Html.Raw(string.Join(",", Model.WorkoutsByDate.Keys.Select(d => $"'{d:dd.MM.yyyy}'")))],
+                    datasets: [{
+                        label: 'Продолжительность (мин)',
+                        data: [@Html.Raw(string.Join(",", Model.WorkoutsByDate.Values))],
+                        backgroundColor: 'rgba(0, 180, 219, 0.5)',
+                        borderColor: 'rgba(0, 180, 219, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Минуты', color: textColor },
+                            ticks: { color: textColor }
+                        },
+                        x: {
+                            title: { display: true, text: 'Дата', color: textColor },
+                            ticks: { color: textColor }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: textColor }
+                        }
+                    }
                 }
-            }
+            });
+        }
+
+        function updateChartTheme() {
+            const theme = document.body.getAttribute('data-theme');
+            const textColor = theme === 'dark' ? '#e0e0e0' : '#333';
+
+            // Обновляем цвета осей и легенды
+            workoutsChart.options.scales.y.title.color = textColor;
+            workoutsChart.options.scales.y.ticks.color = textColor;
+            workoutsChart.options.scales.x.title.color = textColor;
+            workoutsChart.options.scales.x.ticks.color = textColor;
+            workoutsChart.options.plugins.legend.labels.color = textColor;
+
+            // Применяем изменения
+            workoutsChart.update();
+        }
+
+        // Инициализация графика при загрузке страницы
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeChart();
+        });
+
+        // Обновление графика при смене темы
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            setTimeout(updateChartTheme, 0); // Даём время на смену атрибута темы
         });
     </script>
 }

@@ -6,9 +6,9 @@
 }
 
 <div class="container">
-    <h2 class="mb-4">Мои цели</h2>
+    <h2 class="mb-4 fw-bold"><i class="fas fa-bullseye me-2"></i>Мои цели</h2>
 
-    <a href="/Goals/Create" class="btn btn-primary mb-4">Добавить цель</a>
+    <a href="/Goals/Create" class="btn btn-primary mb-4"><i class="fas fa-plus me-2"></i>Добавить цель</a>
 
     @if (Model.Any())
     {
@@ -21,9 +21,10 @@
                 var periodText = goal.Period == "Week" ? "за неделю" : "за месяц";
 
                 <div class="col-md-4 mb-4">
-                    <div class="card">
+                    <div class="card" data-theme="dark">
                         <div class="card-body">
-                            <h5 class="card-title">
+                            <h5 class="card-title fw-bold">
+                                <i class="fas @(goal.Type == "Count" ? "fa-list-ol" : "fa-clock") me-2"></i>
                                 @(goal.Type == "Count" ? "Количество тренировок" : "Общее время") @periodText
                             </h5>
                             <p class="card-text">
@@ -31,19 +32,19 @@
                                 <strong>Прогресс:</strong> @progress @unit<br />
                                 <strong>Дата начала:</strong> @goal.StartDate.ToString("dd.MM.yyyy")
                             </p>
-                            <div class="progress mb-3">
+                            <div class="progress mb-3" data-theme="dark" style="height: 20px;">
                                 <div class="progress-bar" role="progressbar" style="width: @progressPercentage%;"
                                      aria-valuenow="@progressPercentage" aria-valuemin="0" aria-valuemax="100">
                                     @progressPercentage.ToString("F0")%
                                 </div>
                             </div>
-                            <a href="/Goals/Edit/@goal.Id" class="btn btn-warning btn-sm">Редактировать</a>
+                            <a href="/Goals/Edit/@goal.Id" class="btn btn-warning btn-sm"><i class="fas fa-edit me-1"></i>Редактировать</a>
                             <form method="post" action="/Goals/Complete" style="display:inline;">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="id" value="@goal.Id" />
                                 <button type="submit" class="btn btn-success btn-sm"
                                 @(progress >= goal.TargetValue ? "" : "disabled")>
-                                    Отметить выполненной
+                                    <i class="fas fa-check me-1"></i>Выполнено
                                 </button>
                             </form>
                         </div>
@@ -54,6 +55,6 @@
     }
     else
     {
-        <p>У вас пока нет активных целей.</p>
+        <p class="text-light">У вас пока нет активных целей.</p>
     }
 </div>
