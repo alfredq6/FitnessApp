@@ -9,20 +9,48 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
     <style>
         :root {
-            --primary: #0ea5e9;
-            --primary-dark: #0284c7;
-            --text-light: #d1d5db;
-            --text-dark: #374151;
-            --bg-light: #f9fafb;
-            --bg-dark: #1a1a2e;
-            --card-light: #ffffff;
-            --card-dark: #2d3348;
-            --primary-light: #38bdf8;
-            --primary-light-dark: #2563eb;
-            --table-header-dark: #3b435f;
-            --table-header-light: #e2e8f0;
-            --table-row-dark: #252b41;
-            --table-row-light: #f1f5f9;
+            /* Основные акцентные цвета */
+            --primary: #ff6f61; /* Тёплый коралловый для акцентов в тёмной теме */
+            --primary-dark: #e63946; /* Более тёмный коралловый для градиентов */
+            --primary-light: #ffb4a2; /* Светлый коралловый для светлой темы */
+            --primary-light-dark: #f08080; /* Средний коралловый для hover в светлой теме */
+            /* Текстовые цвета */
+            --text-light: #e0e0e0; /* Мягкий светло-серый для тёмной темы */
+            --text-dark: #4a2c2a; /* Тёмно-коричневый для светлой темы */
+            /* Фоны */
+            --bg-light: #fff8f0; /* Очень светлый кремовый для светлой темы */
+            --bg-dark: #2a1b3d; /* Глубокий тёмно-фиолетовый для тёмной темы */
+            --bg-dark-gradient-start: #2a1b3d; /* Начало градиента тёмной темы */
+            --bg-dark-gradient-end: #3d2a5d; /* Конец градиента тёмной темы */
+            /* Карточки */
+            --card-light: #ffffff; /* Белый для карточек в светлой теме */
+            --card-dark: #3f2e56; /* Тёмно-фиолетовый для карточек в тёмной теме */
+            /* Таблицы */
+            --table-header-dark: #4a3c6b; /* Средний фиолетовый для заголовков таблицы в тёмной теме */
+            --table-header-light: #f4e1d2; /* Светло-персиковый для заголовков таблицы в светлой теме */
+            --table-row-dark: #35244c; /* Тёмный фиолетовый для строк в тёмной теме */
+            --table-row-light: #fef5e7; /* Очень светлый персиковый для строк в светлой теме */
+            --table-hover-dark: #5a4678; /* Hover для таблицы в тёмной теме */
+            --table-hover-light: #fce8d5; /* Hover для таблицы в светлой теме */
+            /* Navbar и Footer */
+            --navbar-dark: #35244c; /* Тёмно-фиолетовый для navbar и footer в тёмной теме */
+            --footer-text-dark: #b19cd9; /* Светло-фиолетовый текст футера в тёмной теме */
+            --footer-text-light: #8b5e5a; /* Тёмно-розовый текст футера в светлой теме */
+            /* Тени */
+            --shadow-dark: rgba(0, 0, 0, 0.4); /* Более глубокая тень для тёмной темы */
+            --shadow-light: rgba(74, 44, 42, 0.15); /* Тёплая тень для светлой темы */
+            --btn-hover-shadow: rgba(255, 111, 97, 0.5); /* Тень кнопки при hover, в тон --primary */
+            /* Формы */
+            --form-bg-dark: #4a3c6b; /* Средний фиолетовый для фона форм в тёмной теме */
+            --form-border-dark: #6b5b95; /* Светлее фиолетовый для границ в тёмной теме */
+            --form-bg-light: #ffffff; /* Белый фон форм в светлой теме */
+            --form-border-light: #d9b8b5; /* Мягкий розовый для границ в светлой теме */
+            /* Кнопки outline */
+            --btn-outline-hover-bg-dark: rgba(255, 255, 255, 0.15); /* Полупрозрачный фон при hover в тёмной теме */
+            --btn-outline-hover-bg-light: rgba(74, 44, 42, 0.1); /* Полупрозрачный коричневый фон при hover в светлой теме */
+            /* Иконка toggler */
+            --navbar-toggler-dark: rgba(224, 224, 224, 1); /* Светло-серый для тёмной темы */
+            --navbar-toggler-light: rgba(74, 44, 42, 1); /* Тёмно-коричневый для светлой темы */
         }
 
         body {
@@ -34,7 +62,7 @@
         }
 
             body[data-theme="dark"] {
-                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+                background: linear-gradient(135deg, var(--bg-dark-gradient-start) 0%, var(--bg-dark-gradient-end) 100%);
                 color: var(--text-light);
             }
 
@@ -63,24 +91,26 @@
         }
 
             .navbar[data-theme="dark"] {
-                background: #252538;
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+                background: var(--navbar-dark);
+                box-shadow: 0 4px 10px var(--shadow-dark);
             }
 
             .navbar[data-theme="light"] {
-                background: #ffffff;
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+                background: var(--card-light);
+                box-shadow: 0 4px 10px var(--shadow-light);
             }
 
         .navbar-brand, .nav-link {
             transition: color 0.3s;
         }
 
-        body[data-theme="dark"] .navbar-brand, body[data-theme="dark"] .nav-link {
+        body[data-theme="dark"] .navbar-brand,
+        body[data-theme="dark"] .nav-link {
             color: var(--text-light) !important;
         }
 
-        body[data-theme="light"] .navbar-brand, body[data-theme="light"] .nav-link {
+        body[data-theme="light"] .navbar-brand,
+        body[data-theme="light"] .nav-link {
             color: var(--text-dark) !important;
         }
 
@@ -93,11 +123,11 @@
         }
 
         .navbar-toggler-icon {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(209, 213, 219, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='var(--navbar-toggler-dark)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
         }
 
         body[data-theme="light"] .navbar-toggler-icon {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(55, 65, 81, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='var(--navbar-toggler-light)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
         }
 
         .container {
@@ -120,15 +150,15 @@
         }
 
         footer[data-theme="dark"] {
-            background: #252538;
-            color: #a0a0a0;
-            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3);
+            background: var(--navbar-dark);
+            color: var(--footer-text-dark);
+            box-shadow: 0 -4px 10px var(--shadow-dark);
         }
 
         footer[data-theme="light"] {
-            background: #ffffff;
-            color: #6b7280;
-            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+            background: var(--card-light);
+            color: var(--footer-text-light);
+            box-shadow: 0 -4px 10px var(--shadow-light);
         }
 
         footer {
@@ -141,20 +171,20 @@
         .btn-primary[data-theme="dark"] {
             background: linear-gradient(45deg, var(--primary), var(--primary-dark));
             border: none;
-            color: #ffffff;
+            color: var(--card-light);
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .btn-primary[data-theme="light"] {
             background: linear-gradient(45deg, var(--primary-light), var(--primary-light-dark));
             border: none;
-            color: #ffffff;
+            color: var(--card-light);
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 180, 219, 0.4);
+            box-shadow: 0 4px 15px var(--btn-hover-shadow);
         }
 
         .btn-outline-custom[data-theme="dark"] {
@@ -166,7 +196,7 @@
             .btn-outline-custom[data-theme="dark"]:hover {
                 color: var(--primary);
                 border-color: var(--primary);
-                background: rgba(255, 255, 255, 0.1);
+                background: var(--btn-outline-hover-bg-dark);
             }
 
         .btn-outline-custom[data-theme="light"] {
@@ -178,7 +208,7 @@
             .btn-outline-custom[data-theme="light"]:hover {
                 color: var(--primary-light-dark);
                 border-color: var(--primary-light-dark);
-                background: rgba(0, 0, 0, 0.05);
+                background: var(--btn-outline-hover-bg-light);
             }
 
         .card[data-theme="dark"] {
@@ -186,25 +216,26 @@
             color: var(--text-light);
             border: none;
             border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 15px var(--shadow-dark);
         }
 
         .card[data-theme="light"] {
             background: var(--card-light);
             color: var(--text-dark);
-            border: 1px solid #e5e7eb;
+            border: 1px solid var(--form-border-light);
             border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px var(--shadow-light);
         }
 
         .table-custom {
             border-collapse: separate;
             border-spacing: 0;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px var(--shadow-light);
         }
 
-            .table-custom th, .table-custom td {
-                padding: 12px 16px; /* Увеличенный отступ для читаемости */
+            .table-custom th,
+            .table-custom td {
+                padding: 12px 16px;
                 vertical-align: middle;
             }
 
@@ -239,35 +270,35 @@
         }
 
         .table-custom tbody tr:hover[data-theme="dark"] {
-            background: #343a56; /* Hover-эффект для тёмной темы */
+            background: var(--table-hover-dark);
         }
 
         .table-custom tbody tr:hover[data-theme="light"] {
-            background: #edf2f7; /* Hover-эффект для светлой темы */
+            background: var(--table-hover-light);
         }
 
         .form-control[data-theme="dark"] {
-            background: #3a3a50;
+            background: var(--form-bg-dark);
             color: var(--text-light);
-            border-color: #4a4a60;
+            border-color: var(--form-border-dark);
         }
 
         .form-control[data-theme="light"] {
-            background: #ffffff;
+            background: var(--form-bg-light);
             color: var(--text-dark);
-            border-color: #d1d5db;
+            border-color: var(--form-border-light);
         }
 
         .form-select[data-theme="dark"] {
-            background: #3a3a50;
+            background: var(--form-bg-dark);
             color: var(--text-light);
-            border-color: #4a4a60;
+            border-color: var(--form-border-dark);
         }
 
         .form-select[data-theme="light"] {
-            background: #ffffff;
+            background: var(--form-bg-light);
             color: var(--text-dark);
-            border-color: #d1d5db;
+            border-color: var(--form-border-light);
         }
 
         .progress[data-theme="dark"] .progress-bar {
@@ -291,13 +322,13 @@
         .list-group-item[data-theme="dark"] {
             background: var(--card-dark);
             color: var(--text-light);
-            border-color: #3a3a50;
+            border-color: var(--form-bg-dark);
         }
 
         .list-group-item[data-theme="light"] {
             background: var(--card-light);
             color: var(--text-dark);
-            border-color: #e5e7eb;
+            border-color: var(--form-border-light);
         }
 
         .text-light[data-theme="light"] {
@@ -308,7 +339,9 @@
             color: var(--text-light);
         }
 
-        body[data-theme="light"] h2, body[data-theme="light"] h5, body[data-theme="light"] h6 {
+        body[data-theme="light"] h2,
+        body[data-theme="light"] h5,
+        body[data-theme="light"] h6 {
             color: var(--text-dark);
         }
 
