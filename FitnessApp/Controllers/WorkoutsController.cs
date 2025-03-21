@@ -195,16 +195,16 @@ namespace FitnessApp.Controllers
 
             // Добавляем цели с прогрессом
             var goals = await _context.WorkoutGoals
-                .Where(g => g.UserId == userId && !g.IsCompleted)
+                .Where(g => g.UserId == userId)
                 .ToListAsync();
             foreach (var goal in goals)
             {
                 var goalWorkouts = _context.Workouts
                     .Where(w => w.UserId == userId && w.Date >= goal.StartDate);
                 if (goal.Period == "Week")
-                    goalWorkouts = goalWorkouts.Where(w => w.Date <= goal.StartDate.AddDays(7));
+                    goalWorkouts = goalWorkouts.Where(w => w.Date <= goal.StartDate.Value.AddDays(7));
                 else if (goal.Period == "Month")
-                    goalWorkouts = goalWorkouts.Where(w => w.Date <= goal.StartDate.AddMonths(1));
+                    goalWorkouts = goalWorkouts.Where(w => w.Date <= goal.StartDate.Value.AddMonths(1));
 
                 var workoutsList = await goalWorkouts.ToListAsync();
                 int progress = goal.Type == "Count" ? workoutsList.Count : workoutsList.Sum(w => w.Duration);
@@ -215,7 +215,7 @@ namespace FitnessApp.Controllers
                     Type = goal.Type,
                     TargetValue = goal.TargetValue,
                     Period = goal.Period,
-                    StartDate = goal.StartDate,
+                    StartDate = goal.StartDate.Value,
                     Progress = progress
                 });
             }

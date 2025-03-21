@@ -1,14 +1,100 @@
-﻿@{
-    ViewData["Title"] = "Главная";
+﻿@using FitnessApp.ViewModels
+@model HomeViewModel
+
+@{
+    ViewData["Title"] = "Дашборд";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Добро пожаловать!</h2>
-@if (User?.Identity?.IsAuthenticated == true)
-{
-    <p>Вы вошли как @User.Identity.Name</p>
-    <a href="/Auth/Logout">Выйти</a>
-}
-else
-{
-    <p>Пожалуйста, <a href="/Auth/Login">войдите</a>.</p>
+<div class="container my-5">
+    <h2 class="mb-4 fw-bold"><i class="fas fa-tachometer-alt me-2"></i>Ваш дашборд</h2>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card p-4" data-theme="dark">
+                <h5 class="card-title fw-bold"><i class="fas fa-chart-line me-2"></i>Статистика за неделю</h5>
+                <p class="card-text"><strong>Тренировок:</strong> @Model.WeeklyWorkouts</p>
+                <p class="card-text"><strong>Общее время:</strong> @Model.WeeklyDuration минут</p>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card p-4" data-theme="dark">
+                <h5 class="card-title fw-bold"><i class="fas fa-bolt me-2"></i>Быстрые действия</h5>
+                <div class="d-flex flex-column gap-3">
+                    <a href="/Workouts/Create" class="btn btn-primary" data-theme="dark"><i class="fas fa-plus me-2"></i>Добавить тренировку</a>
+                    <a href="/Workouts/Index" class="btn btn-outline-custom" data-theme="dark"><i class="fas fa-running me-2"></i>Все тренировки</a>
+                    <a href="/Goals/Index" class="btn btn-outline-custom" data-theme="dark"><i class="fas fa-bullseye me-2"></i>Мои цели</a>
+                    <a href="/Workouts/Stats" class="btn btn-outline-custom" data-theme="dark"><i class="fas fa-chart-bar me-2"></i>Статистика</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card p-4 mb-4" data-theme="dark">
+        <h5 class="card-title fw-bold"><i class="fas fa-utensils me-2"></i>Ваше питание</h5>
+        @if (Model.Calories.HasValue)
+        {
+            <p class="card-text"><strong>Итоговая норма калорий:</strong> @Model.Calories.Value.ToString("F0") ккал</p>
+            <p class="card-text"><strong>Белки:</strong> @Model.Protein.Value.ToString("F0") г</p>
+            <p class="card-text"><strong>Жиры:</strong> @Model.Fat.Value.ToString("F0") г</p>
+            <p class="card-text"><strong>Углеводы:</strong> @Model.Carbs.Value.ToString("F0") г</p>
+            @if (Model.WeightProgressPercentage.HasValue)
+            {
+                <p class="card-text"><strong>Прогресс по весу:</strong></p>
+                <div class="progress" data-theme="dark" style="height: 20px;">
+                    <div class="progress-bar" role="progressbar" style="width: @Model.WeightProgressPercentage.Value%;"
+                         aria-valuenow="@Model.WeightProgressPercentage.Value" aria-valuemin="0" aria-valuemax="100">
+                        @Model.WeightProgressPercentage.Value.ToString("F0")%
+                    </div>
+                </div>
+            }
+            <p class="text-light" data-theme="dark"><small>Подробности в <a href="/Profile/Index" class="text-info">профиле</a>.</small></p>
+        }
+        else
+        {
+            <p class="card-text text-light" data-theme="dark">Заполните данные профиля (<a href="/Profile/Edit" class="text-info">редактировать профиль</a>), чтобы рассчитать БЖУ.</p>
+        }
+    </div>
+
+    <div class="card p-4 mb-4" data-theme="dark">
+        <h5 class="card-title fw-bold"><i class="fas fa-flag-checkered me-2"></i>Прогресс целей</h5>
+        @if (Model.Goals.Any())
+        {
+            <div class="row">
+                @foreach (var goal in Model.Goals)
+                {
+                    var progressPercentage = Math.Min((double)goal.Progress / goal.TargetValue * 100, 100);
+                    var unit = goal.Type == "Count" ? "тренировок" : goal.Type == "Duration" ? "минут" : "кг";
+                    var periodText = goal.Period == "Week" ? "за неделю" : "за месяц";
+
+                    <div class="col-md-4 mb-3">
+                        <div class="card p-3" data-theme="dark">
+                            <h6 class="card-title fw-bold">
+                                <i class="fas @(goal.Type == "Count" ? "fa-list-ol" : goal.Type == "Duration" ? "fa-clock" : "fa-weight") me-2"></i>
+                                @(goal.Type == "Count" ? "Тренировки" : goal.Type == "Duration" ? "Время" : "Вес") @periodText
+                            </h6>
+                            <p class="card-text">
+                                <strong>Цель:</strong> @goal.TargetValue @unit<br />
+                                <strong>Прогресс:</strong> @goal.Progress @unit
+                            </p>
+                            <div class="progress" data-theme="dark" style="height: 20px;">
+                                <div class="progress-bar" role="progressbar" style="width: @progressPercentage%;"
+                                     aria-valuenow="@progressPercentage" aria-valuemin="0" aria-valuemax="100">
+                                    @progressPercentage.ToString("F0")%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="card-text text-light" data-theme="dark" data-theme="dark">У вас нет активных целей. <a href="/Goals/Create" class="text-info"><i class="fas fa-plus me-1"></i>Создать цель</a></p>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 }

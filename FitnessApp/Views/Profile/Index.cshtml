@@ -1,4 +1,5 @@
-﻿@model ApplicationUser
+﻿@using FitnessApp.ViewModels
+@model ProfileViewModel
 
 @{
     ViewData["Title"] = "Профиль";
@@ -49,8 +50,53 @@
 
                 <dt class="col-sm-3">Рост:</dt>
                 <dd class="col-sm-9">@(Model.Height.HasValue ? Model.Height.Value.ToString() + " см" : "Не указано")</dd>
+
+                <dt class="col-sm-3">Желаемый вес:</dt>
+                <dd class="col-sm-9">@(Model.TargetWeight.HasValue ? Model.TargetWeight.Value.ToString("F1") + " кг" : "Не указано")</dd>
+
+                <dt class="col-sm-3">Дата цели:</dt>
+                <dd class="col-sm-9">@(Model.TargetDate.HasValue ? Model.TargetDate.Value.ToString("dd.MM.yyyy") : "Не указано")</dd>
             </dl>
-            <a href="/Profile/Edit" class="btn btn-outline-custom" data-theme="dark"><i class="fas fa-edit me-2"></i>Редактировать профиль</a>
         </div>
+    </div>
+
+    <div class="card p-4 mt-4" data-theme="dark">
+        <h5 class="card-title fw-bold"><i class="fas fa-utensils me-2"></i>Калькулятор БЖУ</h5>
+        @if (Model.Bmr.HasValue)
+        {
+            <p class="card-text"><strong>Базовый метаболизм (BMR):</strong> @Model.Bmr.Value.ToString("F0") ккал</p>
+            <p class="card-text"><strong>Суточная норма калорий (поддержание):</strong> @Model.MaintenanceCalories.Value.ToString("F0") ккал</p>
+            <p class="card-text">
+                <strong>Цель по весу:</strong>
+                @switch (Model.WeightGoal)
+                {
+                    case WeightGoal.Maintain:
+                        @: Поддерживать текущий вес
+                        break;
+                    case WeightGoal.Lose:
+                        @: Сбросить вес
+                        break;
+                    case WeightGoal.Gain:
+                        @: Набрать вес
+                        break;
+                }
+            </p>
+            @if (Model.WeightGoal != WeightGoal.Maintain && Model.DailyCalorieAdjustment.HasValue)
+            {
+                <p class="card-text"><strong>Корректировка калорий:</strong> @Model.DailyCalorieAdjustment.Value.ToString("F0") ккал/день (@(Model.DailyCalorieAdjustment.Value > 0 ? "профицит" : "дефицит"))</p>
+            }
+            <p class="card-text"><strong>Итоговая норма калорий:</strong> @Model.Calories.Value.ToString("F0") ккал</p>
+            <p class="card-text"><strong>Белки:</strong> @Model.Protein.Value.ToString("F0") г (30%)</p>
+            <p class="card-text"><strong>Жиры:</strong> @Model.Fat.Value.ToString("F0") г (30%)</p>
+            <p class="card-text"><strong>Углеводы:</strong> @Model.Carbs.Value.ToString("F0") г (40%)</p>
+        }
+        else
+        {
+            <p class="card-text text-light" data-theme="dark">Заполните данные профиля (<a href="/Profile/Edit" class="text-info">редактировать профиль</a>), чтобы рассчитать БЖУ.</p>
+        }
+    </div>
+
+    <div class="mt-4">
+        <a href="/Profile/Edit" class="btn btn-outline-custom" data-theme="dark"><i class="fas fa-edit me-2"></i>Редактировать профиль</a>
     </div>
 </div>

@@ -26,7 +26,7 @@ namespace FitnessApp.Controllers
         {
             var userId = _userManager.GetUserId(User);
             var goals = await _context.WorkoutGoals
-                .Where(g => g.UserId == userId && !g.IsCompleted)
+                .Where(g => g.UserId == userId)
                 .ToListAsync();
 
             // Подсчёт прогресса
@@ -35,9 +35,9 @@ namespace FitnessApp.Controllers
                 var workouts = _context.Workouts
                     .Where(w => w.UserId == userId && w.Date >= goal.StartDate);
                 if (goal.Period == "Week")
-                    workouts = workouts.Where(w => w.Date <= goal.StartDate.AddDays(7));
+                    workouts = workouts.Where(w => w.Date <= goal.StartDate.Value.AddDays(7));
                 else if (goal.Period == "Month")
-                    workouts = workouts.Where(w => w.Date <= goal.StartDate.AddMonths(1));
+                    workouts = workouts.Where(w => w.Date <= goal.StartDate.Value.AddMonths(1));
 
                 var workoutsList = await workouts.ToListAsync();
                 int progress = goal.Type == "Count" ? workoutsList.Count : workoutsList.Sum(w => w.Duration);
@@ -73,7 +73,6 @@ namespace FitnessApp.Controllers
                 TargetValue = targetValue,
                 Period = period,
                 StartDate = DateTime.Now,
-                IsCompleted = false
             };
 
             _context.WorkoutGoals.Add(goal);
@@ -81,21 +80,6 @@ namespace FitnessApp.Controllers
             return RedirectToAction("Index");
         }
 
-        // Пометить цель как выполненную
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Complete(int id)
-        {
-            var userId = _userManager.GetUserId(User);
-            var goal = await _context.WorkoutGoals
-                .FirstOrDefaultAsync(g => g.Id == id && g.UserId == userId);
-            if (goal != null)
-            {
-                goal.IsCompleted = true;
-                await _context.SaveChangesAsync();
-            }
-            return RedirectToAction("Index");
-        }
 
         [HttpGet]
         public async Task<IActionResult> Edit(int id)

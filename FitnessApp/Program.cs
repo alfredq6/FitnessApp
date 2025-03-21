@@ -1,5 +1,6 @@
 using FitnessApp.Data;
 using FitnessApp.Models;
+using FitnessApp.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,11 +22,18 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
+builder.Services.AddScoped<NutritionCalculator>();
+
 // Добавляем сессии (опционально, для простоты)
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession();
 
 builder.Services.AddControllersWithViews();
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Auth/Login"; // Указываем путь для логина
+    options.LogoutPath = "/Auth/Logout"; // Указываем путь для выхода
+});
 
 var app = builder.Build();
 

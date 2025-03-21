@@ -5,48 +5,45 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container">
+<div class="container my-5">
     <h2 class="mb-4 fw-bold"><i class="fas fa-bullseye me-2"></i>Мои цели</h2>
 
-    <a href="/Goals/Create" class="btn btn-primary mb-4"><i class="fas fa-plus me-2"></i>Добавить цель</a>
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success" role="alert">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <div class="mb-4">
+        <a href="/Goals/Create" class="btn btn-primary" data-theme="dark"><i class="fas fa-plus me-2"></i>Создать цель</a>
+    </div>
 
     @if (Model.Any())
     {
         <div class="row">
             @foreach (var goal in Model)
             {
-                var progress = (int)ViewData[$"Progress_{goal.Id}"];
-                var progressPercentage = Math.Min((double)progress / goal.TargetValue * 100, 100);
+                var progressPercentage = Math.Min((double)goal.Progress / goal.TargetValue * 100, 100);
                 var unit = goal.Type == "Count" ? "тренировок" : "минут";
-                var periodText = goal.Period == "Week" ? "за неделю" : "за месяц";
+                var periodText = goal.Period == "Week" ? "за неделю" : goal.Period == "Month" ? "за месяц" : "до " + goal.EndDate?.ToString("dd.MM.yyyy");
 
-                <div class="col-md-4 mb-4">
-                    <div class="card" data-theme="dark">
-                        <div class="card-body">
-                            <h5 class="card-title fw-bold">
-                                <i class="fas @(goal.Type == "Count" ? "fa-list-ol" : "fa-clock") me-2"></i>
-                                @(goal.Type == "Count" ? "Количество тренировок" : "Общее время") @periodText
-                            </h5>
-                            <p class="card-text">
-                                <strong>Цель:</strong> @goal.TargetValue @unit<br />
-                                <strong>Прогресс:</strong> @progress @unit<br />
-                                <strong>Дата начала:</strong> @goal.StartDate.ToString("dd.MM.yyyy")
-                            </p>
-                            <div class="progress mb-3" data-theme="dark" style="height: 20px;">
-                                <div class="progress-bar" role="progressbar" style="width: @progressPercentage%;"
-                                     aria-valuenow="@progressPercentage" aria-valuemin="0" aria-valuemax="100">
-                                    @progressPercentage.ToString("F0")%
-                                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card p-3" data-theme="dark">
+                        <h6 class="card-title fw-bold">
+                            <i class="fas @(goal.Type == "Count" ? "fa-list-ol" : "fa-clock") me-2"></i>
+                            @(goal.Type == "Count" ? "Тренировки" : "Время") @periodText
+                        </h6>
+                        <p class="card-text">
+                            <strong>Цель:</strong> @goal.TargetValue @unit<br />
+                            <strong>Прогресс:</strong> @goal.Progress @unit<br />
+                            <strong>Срок:</strong> @goal.EndDate?.ToString("dd.MM.yyyy")
+                        </p>
+                        <div class="progress" data-theme="dark" style="height: 20px;">
+                            <div class="progress-bar" role="progressbar" style="width: @progressPercentage%;"
+                                 aria-valuenow="@progressPercentage" aria-valuemin="0" aria-valuemax="100">
+                                @progressPercentage.ToString("F0")%
                             </div>
-                            <a href="/Goals/Edit/@goal.Id" class="btn btn-warning btn-sm"><i class="fas fa-edit me-1"></i>Редактировать</a>
-                            <form method="post" action="/Goals/Complete" style="display:inline;">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="id" value="@goal.Id" />
-                                <button type="submit" class="btn btn-success btn-sm"
-                                @(progress >= goal.TargetValue ? "" : "disabled")>
-                                    <i class="fas fa-check me-1"></i>Выполнено
-                                </button>
-                            </form>
                         </div>
                     </div>
                 </div>
@@ -55,6 +52,6 @@
     }
     else
     {
-        <p class="text-light">У вас пока нет активных целей.</p>
+        <p class="text-light" data-theme="dark">У вас нет активных целей.</p>
     }
 </div>

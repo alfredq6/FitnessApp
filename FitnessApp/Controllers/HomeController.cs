@@ -1,7 +1,7 @@
 using FitnessApp.Data;
 using FitnessApp.Models;
+using FitnessApp.Services;
 using FitnessApp.ViewModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,61 +10,56 @@ namespace FitnessApp.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ApplicationDbContext _context;
+    private readonly NutritionCalculator _nutritionCalculator;
 
-    public HomeController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+    public HomeController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, NutritionCalculator nutritionCalculator)
     {
-        _context = context;
         _userManager = userManager;
+        _context = context;
+        _nutritionCalculator = nutritionCalculator;
     }
 
-    [AllowAnonymous] // Доступно всем
     public async Task<IActionResult> Index()
     {
-        if (User.Identity.IsAuthenticated)
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
         {
-            var userId = _userManager.GetUserId(User);
-            var viewModel = new HomeViewModel();
-
-            // Краткая статистика за неделю
-            var weekStart = DateTime.Now.AddDays(-7);
-            var workouts = await _context.Workouts
-                .Where(w => w.UserId == userId && w.Date >= weekStart)
-                .ToListAsync();
-            viewModel.WeeklyWorkouts = workouts.Count;
-            viewModel.WeeklyDuration = workouts.Sum(w => w.Duration);
-
-            // Прогресс целей
-            var goals = await _context.WorkoutGoals
-                .Where(g => g.UserId == userId && !g.IsCompleted)
-                .ToListAsync();
-            foreach (var goal in goals)
-            {
-                var goalWorkouts = _context.Workouts
-                    .Where(w => w.UserId == userId && w.Date >= goal.StartDate);
-                if (goal.Period == "Week")
-                    goalWorkouts = goalWorkouts.Where(w => w.Date <= goal.StartDate.AddDays(7));
-                else if (goal.Period == "Month")
-                    goalWorkouts = goalWorkouts.Where(w => w.Date <= goal.StartDate.AddMonths(1));
-
-                var workoutsList = await goalWorkouts.ToListAsync();
-                int progress = goal.Type == "Count" ? workoutsList.Count : workoutsList.Sum(w => w.Duration);
-                viewModel.Goals.Add(new GoalProgress
-                {
-                    Id = goal.Id,
-                    Type = goal.Type,
-                    TargetValue = goal.TargetValue,
-                    Period = goal.Period,
-                    StartDate = goal.StartDate,
-                    Progress = progress
-                });
-            }
-
-            return View("Dashboard", viewModel);
+            return View("Welcome");
         }
 
-        // Для неавторизованных — приветственная страница
-        return View("Welcome");
+        var goals = await _context.WorkoutGoals
+            .Where(g => g.UserId == user.Id)
+            .ToListAsync();
+
+        var lastWeekStart = DateTime.Now.AddDays(-7);
+        var weeklyGoals = goals.Where(g => g.StartDate.HasValue && g.StartDate.Value >= lastWeekStart).ToList();
+
+        var model = new HomeViewModel
+        {
+            WeeklyWorkouts = weeklyGoals
+                .Where(g => g.Type == "Count")
+                .Sum(g => g.Progress),
+            WeeklyDuration = weeklyGoals
+                .Where(g => g.Type == "Duration")
+                .Sum(g => g.Progress),
+            Goals = goals.Select(g => new GoalViewModel
+            {
+                Type = g.Type,
+                Period = g.Period,
+                TargetValue = g.TargetValue,
+                Progress = g.Progress
+            }).ToList()
+        };
+
+        var nutritionResult = _nutritionCalculator.Calculate(user);
+        model.Calories = nutritionResult.Calories;
+        model.Protein = nutritionResult.Protein;
+        model.Fat = nutritionResult.Fat;
+        model.Carbs = nutritionResult.Carbs;
+        model.WeightProgressPercentage = nutritionResult.WeightProgressPercentage;
+
+        return View(model);
     }
 }
