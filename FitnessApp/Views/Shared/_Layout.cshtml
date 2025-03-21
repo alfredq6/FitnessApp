@@ -355,7 +355,10 @@
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <span class="nav-link"><i class="fas fa-user me-2"></i>@User.Identity.Name</span>
+                                <a class="nav-link" href="/Profile/Index">
+                                    <i class="fas fa-user me-2"></i>
+                                    @(string.IsNullOrEmpty(User.FindFirst("Name")?.Value) ? User.Identity.Name : User.FindFirst("Name")?.Value)
+                                </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="/Workouts/Index"><i class="fas fa-running me-2"></i>Тренировки</a>

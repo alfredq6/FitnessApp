@@ -1,0 +1,61 @@
+﻿@model ApplicationUser
+
+@{
+    ViewData["Title"] = "Редактировать профиль";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5">
+    <h2 class="mb-4 fw-bold"><i class="fas fa-user-edit me-2"></i>Редактировать профиль</h2>
+
+    <div class="card" data-theme="dark">
+        <div class="card-body">
+            <form asp-action="Edit" asp-controller="Profile" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label">Имя</label>
+                    <input asp-for="Name" class="form-control" data-theme="dark" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Gender" class="form-label">Пол</label>
+                    <select asp-for="Gender" class="form-select" data-theme="dark">
+                        <option value="@GenderType.NotSpecified">Не указано</option>
+                        <option value="@GenderType.Male">Мужской</option>
+                        <option value="@GenderType.Female">Женский</option>
+                    </select>
+                    <span asp-validation-for="Gender" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Age" class="form-label">Возраст</label>
+                    <input asp-for="Age" class="form-control" type="number" data-theme="dark" />
+                    <span asp-validation-for="Age" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Weight" class="form-label">Вес (кг)</label>
+                    <input asp-for="Weight" class="form-control" type="number" step="0.1" data-theme="dark" />
+                    <span asp-validation-for="Weight" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Height" class="form-label">Рост (см)</label>
+                    <input asp-for="Height" class="form-control" type="number" data-theme="dark" />
+                    <span asp-validation-for="Height" class="text-danger"></span>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary" data-theme="dark"><i class="fas fa-save me-2"></i>Сохранить</button>
+                    <a href="/Profile/Index" class="btn btn-outline-custom" data-theme="dark"><i class="fas fa-arrow-left me-2"></i>Отмена</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

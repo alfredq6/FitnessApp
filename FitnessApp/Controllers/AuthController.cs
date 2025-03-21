@@ -2,6 +2,7 @@
 using FitnessApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FitnessApp.Controllers
 {
@@ -16,15 +17,49 @@ namespace FitnessApp.Controllers
             _signInManager = signInManager;
         }
 
-        // Страница регистрации (GET)
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
 
-        // Обработка регистрации (POST)
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.FindByNameAsync(model.Username);
+            if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
+            {
+                // Добавляем кастомный claim для Name
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim("Name", user.Name ?? user.UserName) // Если Name null, используем UserName
+                };
+                var identity = new ClaimsIdentity(claims, IdentityConstants.ApplicationScheme);
+                var principal = new ClaimsPrincipal(identity);
+
+                await _signInManager.SignInWithClaimsAsync(user, isPersistent: false, claims);
+                return RedirectToAction("Index", "Home");
+            }
+
+            ViewData["ErrorMessage"] = "Неверное имя пользователя или пароль";
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (!ModelState.IsValid)
@@ -32,11 +67,20 @@ namespace FitnessApp.Controllers
                 return View(model);
             }
 
-            var user = new ApplicationUser { UserName = model.Username, Email = model.Username };
+            var user = new ApplicationUser
+            {
+                UserName = model.Username,
+                Email = model.Username // Если используете Email как логин
+            };
             var result = await _userManager.CreateAsync(user, model.Password);
-
             if (result.Succeeded)
             {
+                // Добавляем claim для Name
+                var claims = new List<Claim>
+                {
+                    new Claim("Name", user.Name ?? user.UserName)
+                };
+                await _userManager.AddClaimsAsync(user, claims);
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 return RedirectToAction("Index", "Home");
             }
@@ -45,42 +89,14 @@ namespace FitnessApp.Controllers
             {
                 ModelState.AddModelError(string.Empty, error.Description);
             }
-            return View();
+            return View(model);
         }
 
-        // Страница входа (GET)
-        [HttpGet]
-        public IActionResult Login()
-        {
-            return View();
-        }
-
-        // Обработка входа (POST)
-        [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, isPersistent: false, lockoutOnFailure: false);
-
-            if (result.Succeeded)
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
-            ModelState.AddModelError(string.Empty, "Неверный email или пароль.");
-            return View();
-        }
-
-        // Выход
         [HttpGet]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Login");
+            return RedirectToAction("Login", "Auth");
         }
     }
 }

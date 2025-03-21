@@ -1,0 +1,56 @@
+﻿@model ApplicationUser
+
+@{
+    ViewData["Title"] = "Профиль";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5">
+    <h2 class="mb-4 fw-bold"><i class="fas fa-user me-2"></i>Ваш профиль</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success" role="alert">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <div class="card" data-theme="dark">
+        <div class="card-body">
+            <h5 class="card-title fw-bold">Информация о пользователе</h5>
+            <dl class="row">
+                <dt class="col-sm-3">Имя пользователя:</dt>
+                <dd class="col-sm-9">@Model.UserName</dd>
+
+                <dt class="col-sm-3">Имя:</dt>
+                <dd class="col-sm-9">@(Model.Name ?? "Не указано")</dd>
+
+                <dt class="col-sm-3">Пол:</dt>
+                <dd class="col-sm-9">
+                    @switch (Model.Gender)
+                    {
+                        case GenderType.Male:
+                            @: Мужской
+                            break;
+                        case GenderType.Female:
+                            @: Женский
+                            break;
+                        default:
+                            @: Не указано
+                            break;
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Возраст:</dt>
+                <dd class="col-sm-9">@(Model.Age.HasValue ? Model.Age.ToString() : "Не указано")</dd>
+
+                <dt class="col-sm-3">Вес:</dt>
+                <dd class="col-sm-9">@(Model.Weight.HasValue ? Model.Weight.Value.ToString("F1") + " кг" : "Не указано")</dd>
+
+                <dt class="col-sm-3">Рост:</dt>
+                <dd class="col-sm-9">@(Model.Height.HasValue ? Model.Height.Value.ToString() + " см" : "Не указано")</dd>
+            </dl>
+            <a href="/Profile/Edit" class="btn btn-outline-custom" data-theme="dark"><i class="fas fa-edit me-2"></i>Редактировать профиль</a>
+        </div>
+    </div>
+</div>
